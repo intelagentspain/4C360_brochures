@@ -14,8 +14,8 @@ import {
   Flame,
   Leaf,
   Mic,
-  MicOff,
   Network,
+  PhoneOff,
   Radar,
   Search,
   ShieldCheck,
@@ -1171,18 +1171,19 @@ function SolutionAgentWidget({ solution }: { solution?: Solution }) {
                   !agentAvailable
                     ? 'cursor-not-allowed border-white/10 bg-white/5 text-white/35'
                     : voiceActive
-                    ? 'border-[#E11D2E]/50 bg-[#E11D2E]/20 text-[#FFB4BC]'
+                    ? 'border-[#E11D2E]/50 bg-[#E11D2E]/20 text-[#FFB4BC] hover:bg-[#E11D2E]/30'
                     : 'border-[#2E7FFF]/35 bg-[#2E7FFF]/12 text-[#B8C7DB] hover:text-white'
                 }`}
-                aria-label={voiceActive ? 'Stop voice advisor' : 'Start voice advisor'}
+                aria-label={voiceActive ? 'End voice advisor session' : 'Start voice advisor'}
+                title={voiceActive ? 'End voice session' : 'Start voice advisor'}
               >
-                {voiceActive ? <MicOff size={18} /> : <Mic size={18} />}
+                {voiceActive ? <PhoneOff size={18} /> : <Mic size={18} />}
               </button>
             </div>
             <div className="mt-3 rounded-xl bg-black/20 px-3 py-2 text-[12px] font-semibold text-[#B8C7DB]">
               {status === 'connecting' && 'Connecting to the solutions advisor...'}
               {status === 'listening' && 'Listening now. Ask your question.'}
-              {status === 'speaking' && 'Advisor is responding...'}
+              {status === 'speaking' && 'Advisor is responding. You can speak again when it returns to listening.'}
               {status === 'error' && 'Voice connection failed. Check the dedicated agent ID and browser microphone permissions.'}
               {status === 'idle' && (agentAvailable ? 'Click the microphone to start.' : 'Agent ID missing.')}
             </div>
