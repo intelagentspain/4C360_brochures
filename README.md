@@ -10,8 +10,10 @@ Standalone public microsite for interactive 4C360 solution brochures.
 - `/4c360/fm`
 - `/4c360/marine`
 - `/4c360/osh`
+- `/4c360/retail-compliance`
 - `/brochure`
 - `/brochure/properties`
+- `/brochure/retail-compliance`
 
 ## Local Run
 
@@ -34,6 +36,14 @@ Optional ElevenLabs brochure advisor:
 ```bash
 VITE_ELEVENLABS_SOLUTIONS_AGENT_ID=agent_id_here
 ```
+
+On Replit, add this as a Secret named exactly:
+
+```text
+VITE_ELEVENLABS_SOLUTIONS_AGENT_ID
+```
+
+Then restart the app or republish so Vite can include it in the client build.
 
 If the agent ID is missing, the brochure shows a graceful disabled advisor state.
 

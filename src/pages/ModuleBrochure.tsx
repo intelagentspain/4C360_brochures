@@ -62,7 +62,7 @@ interface Solution {
   ctas: string[];
 }
 
-const SOLUTIONS_AGENT_ID = import.meta.env.VITE_ELEVENLABS_SOLUTIONS_AGENT_ID as string | undefined;
+const SOLUTIONS_AGENT_ID = (import.meta.env.VITE_ELEVENLABS_SOLUTIONS_AGENT_ID as string | undefined)?.trim();
 const DEMO_URL = 'https://calendly.com/4c360/intro-meeting';
 
 const audiences: Array<'All' | Audience> = ['All', 'Executive', 'Operations', 'Property Management', 'Field Teams', 'Residents', 'Compliance', 'HSE', 'Marine', 'Retail'];
@@ -435,11 +435,11 @@ const solutions: Solution[] = [
     name: '4C360 Retail Compliance',
     label: 'Retail Governance, Risk & Compliance',
     headline: 'Compliance intelligence for retail networks, stores, vendors, and operating evidence.',
-    subheadline: 'Connect obligations, controls, policies, audits, store checks, incidents, third parties, evidence, and management reporting into one AI-assisted compliance operating model.',
+    subheadline: 'Connect obligations, controls, policies, FieldOps store checks, audits, incidents, third parties, evidence, and management reporting into one AI-assisted compliance operating model.',
     audience: 'Retail groups, franchise operators, compliance teams, store operations, internal audit, risk leaders, and executive management',
     accent: '#22D3EE',
     icon: Building2,
-    stats: [['Stores', 'Control visibility'], ['Obligations', 'Tracked to evidence'], ['AI', 'Risk and gap guidance'], ['Audit', 'Ready packs']],
+    stats: [['Stores', 'FieldOps execution'], ['Obligations', 'Tracked to evidence'], ['AI', 'Risk and gap guidance'], ['Audit', 'Ready packs']],
     modules: [
       {
         id: 'retailcommand',
@@ -454,7 +454,7 @@ const solutions: Solution[] = [
         workflows: ['Review compliance pulse', 'Drill into region or store risk', 'Open overdue action or control gap', 'Generate management summary'],
         aiCapabilities: ['Executive compliance summaries', 'Risk trend explanations', 'Hotspot detection', 'Recommended next actions'],
         kpis: ['Compliance score', 'Overdue actions', 'High-risk stores', 'Control effectiveness', 'Audit readiness'],
-        integrations: ['Obligations register', 'Evidence repository', 'Audit workflows', 'Notifications'],
+        integrations: ['FieldOps', 'Obligations register', 'Evidence repository', 'Audit workflows', 'Notifications'],
         clientValue: 'Turns retail compliance from periodic reporting into a live management system.',
       },
       {
@@ -470,7 +470,7 @@ const solutions: Solution[] = [
         workflows: ['Create obligation', 'Assign owner and review cycle', 'Attach required evidence', 'Monitor status and escalation'],
         aiCapabilities: ['Obligation summaries', 'Renewal risk prompts', 'Evidence requirement suggestions', 'Compliance impact explanations'],
         kpis: ['Open obligations', 'Overdue reviews', 'Upcoming renewals', 'Evidence coverage'],
-        integrations: ['Evidence repository', 'Notifications', 'Store checks'],
+        integrations: ['FieldOps', 'Evidence repository', 'Notifications', 'Store checks'],
         clientValue: 'Keeps commitments visible, owned, and backed by proof.',
       },
       {
@@ -483,10 +483,10 @@ const solutions: Solution[] = [
         audiences: ['Compliance', 'Operations', 'Retail'],
         summary: 'A reusable control library for store operations, cash handling, privacy, safety, stock, vendor governance, approvals, and customer-facing processes.',
         outcomes: ['Standardize control expectations', 'Map controls to obligations and risks', 'Identify weak or failed controls', 'Support repeatable assurance'],
-        workflows: ['Define control', 'Map to obligation and owner', 'Schedule testing', 'Record exceptions and actions'],
+        workflows: ['Define control', 'Map to obligation and owner', 'Schedule FieldOps testing', 'Record exceptions and actions'],
         aiCapabilities: ['Control wording improvement', 'Control gap detection', 'Testing suggestions', 'Exception summaries'],
         kpis: ['Controls active', 'Controls tested', 'Failed controls', 'Control maturity'],
-        integrations: ['Audit & Assurance', 'Risk Register', 'Evidence repository'],
+        integrations: ['FieldOps', 'Audit & Assurance', 'Risk Register', 'Evidence repository'],
         clientValue: 'Makes compliance expectations operational and measurable across every store and team.',
       },
       {
@@ -497,29 +497,45 @@ const solutions: Solution[] = [
         icon: ClipboardCheck,
         accent: '#E11D2E',
         audiences: ['Retail', 'Field Teams', 'Compliance'],
-        summary: 'Mobile store audits and checks for merchandising, safety, customer notices, cash controls, hygiene, asset condition, documentation, and operational standards.',
-        outcomes: ['Run consistent store checks', 'Capture photo evidence', 'Find repeat non-compliance', 'Turn failed checks into actions'],
-        workflows: ['Select store checklist', 'Capture pass/fail checks and photos', 'Flag failed controls', 'Submit for review and action'],
-        aiCapabilities: ['Checklist generation', 'Photo evidence prompts', 'Failed-item classification', 'Store risk summary'],
-        kpis: ['Checks completed', 'Failed items', 'Evidence completeness', 'Repeat findings'],
+        summary: 'FieldOps-powered store audits and checks for merchandising, safety, customer notices, cash controls, hygiene, asset condition, documentation, and operational standards.',
+        outcomes: ['Run consistent store checks', 'Capture photo evidence', 'Find repeat non-compliance', 'Turn failed checks into actions', 'Compare store readiness by region'],
+        workflows: ['Select FieldOps checklist', 'Capture pass/fail checks and photos', 'Flag failed controls', 'Submit live result for review and action'],
+        aiCapabilities: ['Checklist generation', 'Photo evidence prompts', 'Failed-item classification', 'Store risk summary', 'Regional trend explanation'],
+        kpis: ['Checks completed', 'Failed items', 'Evidence completeness', 'Repeat findings', 'Store readiness score'],
         integrations: ['FieldOps', 'ServiceDesk', 'Evidence repository'],
         clientValue: 'Connects field assurance to live compliance dashboards instead of static audit forms.',
       },
       {
         id: 'fieldops',
         name: 'FieldOps',
-        tagline: 'Mobile store audits, surveys, and evidence capture',
+        tagline: 'Retail field compliance execution engine',
         category: 'Mobile Execution',
         icon: ClipboardCheck,
         accent: '#E11D2E',
-        audiences: ['Retail', 'Field Teams', 'Compliance', 'Operations'],
-        summary: 'A mobile execution layer for store managers, regional auditors, franchise supervisors, loss-prevention teams, and compliance reviewers.',
-        outcomes: ['Digitize store visits and control checks', 'Capture photo, GPS, signature, and reading evidence', 'Distribute surveys by QR or email', 'Feed live submissions into compliance dashboards'],
-        workflows: ['Create mobile checklist', 'Assign to store, region, vendor, or role', 'Capture answers and evidence', 'Review failed checks and create action'],
-        aiCapabilities: ['Checklist generation by store process', 'Evidence requirement suggestions', 'Failed-item action drafting', 'Submission summaries'],
-        kpis: ['Mobile submissions', 'Stores checked', 'Failed checks', 'Evidence files', 'Review cycle'],
-        integrations: ['Store Assurance', 'Evidence Repository', 'Issues & Remediation', 'Notifications'],
-        clientValue: 'Brings retail compliance out of spreadsheets and into live store-level execution.',
+        audiences: ['Executive', 'Retail', 'Field Teams', 'Compliance', 'Operations'],
+        summary: 'The mobile execution engine for retail compliance: store visits, remote self-certifications, franchise checks, mystery/shop-floor audits, loss-prevention walks, food/safety checks, vendor visits, QR submissions, and evidence capture.',
+        outcomes: ['Digitize store visits and control checks', 'Capture photo, GPS, signature, QR, and reading evidence', 'Distribute surveys by QR, email, link, role, store, or region', 'Feed live submissions into compliance dashboards', 'Create issues automatically from failed answers'],
+        workflows: ['AI generates checklist by process, risk, or store type', 'Assign to store, region, vendor, role, or public QR', 'Capture answers, evidence, comments, and sign-off', 'Trigger remediation, incident, or evidence review'],
+        aiCapabilities: ['Checklist generation by store process', 'Copilot guidance for field auditors', 'Evidence requirement suggestions', 'Failed-item action drafting', 'Live submission summaries', 'Repeat non-compliance detection'],
+        kpis: ['Mobile submissions', 'Stores checked', 'Failed checks', 'Evidence files', 'Review cycle', 'Auto-created issues'],
+        integrations: ['Store Assurance', 'Controls Library', 'Evidence Repository', 'Issues & Remediation', 'Policy & Attestation', 'Notifications'],
+        clientValue: 'Makes retail compliance executable at store level, not just documented at head office.',
+      },
+      {
+        id: 'fieldcampaigns',
+        name: 'Field Campaigns',
+        tagline: 'Targeted compliance campaigns by store, region, or risk',
+        category: 'Mobile Execution',
+        icon: Network,
+        accent: '#38D98A',
+        audiences: ['Executive', 'Retail', 'Compliance', 'Operations', 'Field Teams'],
+        summary: 'Launch rapid FieldOps campaigns for seasonal checks, product recalls, safety notices, branch readiness, promotion compliance, licence evidence, and urgent control confirmations.',
+        outcomes: ['Reach every store quickly', 'Track live completion by region', 'Escalate non-response', 'Collect comparable evidence at scale'],
+        workflows: ['Choose campaign objective', 'Select stores, roles, or vendors', 'Send checklist by app, QR, or email', 'Monitor live submissions and exceptions'],
+        aiCapabilities: ['Campaign checklist drafting', 'Store targeting suggestions', 'Non-response escalation summaries', 'Executive completion narrative'],
+        kpis: ['Campaign completion', 'Stores pending', 'Exceptions found', 'Evidence submitted', 'Escalations open'],
+        integrations: ['FieldOps', 'Notifications', 'Evidence Repository', 'RetailCompliance Command'],
+        clientValue: 'Lets retail compliance teams move from slow audit cycles to rapid, network-wide assurance.',
       },
       {
         id: 'policyattestation',
