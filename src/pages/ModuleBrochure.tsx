@@ -1345,7 +1345,6 @@ function SolutionsLanding() {
           </div>
         </section>
       </main>
-      <SolutionAgentWidget />
     </div>
   );
 }
@@ -1634,7 +1633,6 @@ function SolutionBrochure({ solution }: { solution: Solution }) {
           </div>
         </footer>
       </main>
-      <SolutionAgentWidget solution={solution} />
     </div>
   );
 }
@@ -1651,8 +1649,18 @@ export function ModuleBrochure() {
   const solution = slug ? solutions.find(item => item.slug === slug) : undefined;
 
   if (!solution) {
-    return <SolutionsLanding />;
+    return (
+      <>
+        <SolutionsLanding />
+        <SolutionAgentWidget />
+      </>
+    );
   }
 
-  return <SolutionBrochure solution={solution} />;
+  return (
+    <>
+      <SolutionBrochure solution={solution} />
+      <SolutionAgentWidget solution={solution} />
+    </>
+  );
 }
