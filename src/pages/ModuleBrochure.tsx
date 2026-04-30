@@ -1060,6 +1060,34 @@ function routeTo(slug?: SolutionSlug) {
   window.dispatchEvent(new PopStateEvent('popstate'));
 }
 
+const solutionNavigationAliases: Record<SolutionSlug, string[]> = {
+  properties: ['properties', 'property', 'real estate', 'development', 'developer', 'residents', 'project command', 'projectcommand'],
+  fm: ['fm', 'facilities', 'facility', 'facility management', 'maintenance', 'cafm', 'work orders', 'asset maintenance'],
+  marine: ['marine', 'maritime', 'port', 'ports', 'fleet', 'vessel', 'vessels', 'marina'],
+  osh: ['osh', 'hse', 'safety', 'health and safety', 'occupational safety', 'incident safety', 'permits'],
+  'retail-compliance': ['retail', 'retail compliance', 'store compliance', 'stores', 'branches', 'branch compliance', 'bank compliance'],
+};
+
+function findSolutionIntent(value?: string): SolutionSlug | null {
+  if (!value) return null;
+  const input = value.toLowerCase().replace(/[-_]/g, ' ').trim();
+  const direct = solutions.find(solution => solution.slug === value || solution.name.toLowerCase() === input);
+  if (direct) return direct.slug;
+
+  for (const [slug, aliases] of Object.entries(solutionNavigationAliases) as Array<[SolutionSlug, string[]]>) {
+    if (aliases.some(alias => input.includes(alias))) return slug;
+  }
+
+  return null;
+}
+
+function navigateToSolutionIntent(value?: string) {
+  const slug = findSolutionIntent(value);
+  if (!slug) return null;
+  routeTo(slug);
+  return solutions.find(solution => solution.slug === slug) ?? null;
+}
+
 function MetricPill({ children }: { children: React.ReactNode }) {
   return (
     <span className="rounded-full border border-[rgba(46,127,255,0.22)] bg-[#07111F] px-3 py-1 text-[11px] font-bold text-[#B8C7DB]">
@@ -1084,7 +1112,27 @@ function SolutionAgentWidget({ solution }: { solution?: Solution }) {
   const [voiceActive, setVoiceActive] = useState(false);
   const [status, setStatus] = useState<'idle' | 'connecting' | 'listening' | 'speaking' | 'error'>('idle');
   const conversationRef = useRef<{ endSession(): Promise<void> } | null>(null);
+  const lastAutoNavigationRef = useRef('');
   const agentAvailable = Boolean(SOLUTIONS_AGENT_ID);
+
+  const openSolutionFromAdvisor = (value?: string) => {
+    const nextSolution = navigateToSolutionIntent(value);
+    if (!nextSolution) return null;
+    setOpen(true);
+    return nextSolution;
+  };
+
+  const maybeNavigateFromMessage = (message: string, source: string) => {
+    if (source !== 'user') return;
+    const normalized = message.toLowerCase();
+    const looksLikeNavigation =
+      /\b(open|show|take me|go to|navigate|switch|explore|see|view)\b/.test(normalized) ||
+      /\b(fm|osh|marine|properties|property|retail|compliance)\b/.test(normalized);
+    if (!looksLikeNavigation || normalized === lastAutoNavigationRef.current) return;
+
+    const nextSolution = openSolutionFromAdvisor(normalized);
+    if (nextSolution) lastAutoNavigationRef.current = normalized;
+  };
 
   const stopVoice = async () => {
     if (conversationRef.current) {
@@ -1109,6 +1157,25 @@ function SolutionAgentWidget({ solution }: { solution?: Solution }) {
       conversationRef.current = await Conversation.startSession({
         agentId: SOLUTIONS_AGENT_ID!,
         connectionType: 'websocket',
+        dynamicVariables: {
+          current_solution: solution?.name ?? '4C360 solutions hub',
+          available_solutions: solutions.map(item => `${item.name} (${item.slug})`).join(', '),
+          navigation_instruction:
+            'When the user asks to open, show, explore, or switch to a solution, call navigate_to_solution with one of: properties, fm, marine, osh, retail-compliance.',
+        },
+        clientTools: {
+          navigate_to_solution: ({ solution: requestedSolution, slug }: { solution?: string; slug?: string }) => {
+            const nextSolution = openSolutionFromAdvisor(requestedSolution ?? slug);
+            return nextSolution
+              ? `Opened ${nextSolution.name}.`
+              : 'I could not match that to a 4C360 solution. Available options are Properties, FM, Marine, OSH, and Retail Compliance.';
+          },
+          show_solutions_hub: () => {
+            routeTo();
+            setOpen(true);
+            return 'Opened the 4C360 solutions hub.';
+          },
+        },
         onConnect: () => setStatus('listening'),
         onDisconnect: () => {
           conversationRef.current = null;
@@ -1119,6 +1186,9 @@ function SolutionAgentWidget({ solution }: { solution?: Solution }) {
           conversationRef.current = null;
           setVoiceActive(false);
           setStatus('error');
+        },
+        onMessage: ({ message, source }: { message: string; source: string }) => {
+          maybeNavigateFromMessage(message, source);
         },
         onModeChange: (mode: { mode: 'speaking' | 'listening' }) => setStatus(mode.mode),
       });
